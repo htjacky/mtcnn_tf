@@ -5,7 +5,7 @@ import sys
 import os
 rootPath = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "../"))
 sys.path.insert(0, rootPath)
-from nms import py_nms
+from detection.nms import py_nms
 from training.mtcnn_config import config
 
 class MtcnnDetector(object):
@@ -350,3 +350,61 @@ class MtcnnDetector(object):
             landmarks.append(landmark)
         return all_boxes,landmarks
 
+    def detect_single_image(self, im):
+        all_boxes = []  # save each image's bboxes
+
+        landmarks = []
+
+       # sum_time = 0
+
+        t1 = 0
+        if self.pnet_detector:
+          #  t = time.time()
+            # ignore landmark
+            boxes, boxes_c, landmark = self.detect_pnet(im)
+           # t1 = time.time() - t
+           # sum_time += t1
+            if boxes_c is None:
+                print("boxes_c is None...")
+                all_boxes.append(np.array([]))
+                # pay attention
+                landmarks.append(np.array([]))
+
+
+        # rnet
+
+        if boxes_c is None:
+            print('boxes_c is None after Pnet')
+        t2 = 0
+        if self.rnet_detector and not boxes_c is  None:
+           # t = time.time()
+            # ignore landmark
+            boxes, boxes_c, landmark = self.detect_rnet(im, boxes_c)
+           # t2 = time.time() - t
+           # sum_time += t2
+            if boxes_c is None:
+                all_boxes.append(np.array([]))
+                landmarks.append(np.array([]))
+
+
+        # onet
+        t3 = 0
+        if boxes_c is None:
+            print('boxes_c is None after Rnet')
+
+        if self.onet_detector and not boxes_c is  None:
+          #  t = time.time()
+            boxes, boxes_c, landmark = self.detect_onet(im, boxes_c)
+         #   t3 = time.time() - t
+          #  sum_time += t3
+            if boxes_c is None:
+                all_boxes.append(np.array([]))
+                landmarks.append(np.array([]))
+
+        #print(
+         #   "time cost " + '{:.3f}'.format(sum_time) + '  pnet {:.3f}  rnet {:.3f}  onet {:.3f}'.format(t1, t2, t3))
+
+        all_boxes.append(boxes_c)
+        landmarks.append(landmark)
+
+        return all_boxes, landmarks

@@ -55,7 +55,8 @@ def test(stage, testFolder):
         allLandmark = allLandmarks[idx]
         if allLandmark is not None: # pnet and rnet will be ignore landmark
             for landmark in allLandmark:
-                for i in range(len(landmark)/2):
+                #for i in range(len(landmark_int)/2):
+                for i in range(len(landmark)//2):
                     cv2.circle(image, (int(landmark[2*i]),int(int(landmark[2*i+1]))), 3, (0,0,255))
         savePath = os.path.join(rootPath, 'testing', 'results_%s'%(stage))
         if not os.path.isdir(savePath):

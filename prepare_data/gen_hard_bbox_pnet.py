@@ -3,6 +3,7 @@ import sys
 import numpy as np
 import cv2
 import os
+import datetime
 rootPath = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "../"))
 sys.path.insert(0, rootPath)
 from tools.common_utils import IoU
@@ -30,7 +31,8 @@ def gen_hard_bbox_pnet(srcDataSet, srcAnnotations):
         # image path
         imPath = annotation[0]
         # boxed change to float type
-        bbox = map(float, annotation[1:])
+        #bbox = map(float, annotation[1:])
+        bbox = list(map(float, annotation[1:]))
         # gt. each row mean bounding box
         boxes = np.array(bbox, dtype=np.float32).reshape(-1, 4)
         #load image
@@ -132,8 +134,11 @@ def gen_hard_bbox_pnet(srcDataSet, srcAnnotations):
         sys.stdout.flush()
     for f in saveFiles.values():
         f.close()
-    print '\n'
+    print('\n')
 
 
 if __name__ == "__main__":
+    starttime = datetime.datetime.now()
     gen_hard_bbox_pnet("dataset/WIDER_train/images/", "dataset/wider_face_train.txt")
+    endtime = datetime.datetime.now()
+    print((endtime - starttime).seconds)

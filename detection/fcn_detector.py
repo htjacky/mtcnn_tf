@@ -23,7 +23,7 @@ class FcnDetector(object):
             #self.cls_prob, self.bbox_pred = net_factory(image_reshape, training=False)
             #contains landmark
             self.cls_prob, self.bbox_pred, _ = net_factory(image_reshape, training=False)
-            
+
             #allow 
             self.sess = tf.Session(config=tf.ConfigProto(allow_soft_placement=True, gpu_options=tf.GPUOptions(allow_growth=True)))
             saver = tf.train.Saver()
@@ -34,6 +34,8 @@ class FcnDetector(object):
             assert  readstate, "the params dictionary is not valid"
             print("Restore param from: ", model_path)
             saver.restore(self.sess, model_path)
+
+
     def predict(self, databatch):
         height, width, _ = databatch.shape
         # print(height, width)

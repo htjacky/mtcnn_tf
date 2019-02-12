@@ -2,6 +2,7 @@
 import tensorflow as tf
 import numpy as np
 import os
+#import datetime
 from datetime import datetime
 import sys
 import argparse
@@ -90,7 +91,9 @@ def train(netFactory, modelPrefix, endEpoch, dataPath, display=200, baseLr=0.01,
         ratio_cls_loss, ratio_bbox_loss, ratio_landmark_loss = 1.0, 0.5, 0.5
     elif net == 'rnet':
         image_size = 24
-        ratio_cls_loss, ratio_bbox_loss, ratio_landmark_loss = 1.0, 0.5, 1.0
+        #ratio_cls_loss, ratio_bbox_loss, ratio_landmark_loss = 1.0, 0.5, 1.0
+        # lhj: back to paper setting
+        ratio_cls_loss, ratio_bbox_loss, ratio_landmark_loss = 1.0, 0.5, 0.5
     elif net == 'onet':
         ratio_cls_loss, ratio_bbox_loss, ratio_landmark_loss = 1.0, 0.5, 1.0
         image_size = 48
@@ -129,7 +132,7 @@ def train(netFactory, modelPrefix, endEpoch, dataPath, display=200, baseLr=0.01,
     i = 0
     #total steps
     MAX_STEP = int(total_num / config.BATCH_SIZE + 1) * endEpoch
-    print "\n\nTotal step: ", MAX_STEP
+    print("\n\nTotal step: ", MAX_STEP)
     epoch = 0
     sess.graph.finalize()    
     try:
@@ -189,7 +192,7 @@ def parse_args():
 
 if __name__ == "__main__":
     args = parse_args()
-    print "The training argument info is: ", args
+    print ("The training argument info is: ", args)
     if args.stage not in ['pnet', 'rnet', 'onet']:
         raise Exception("Please specify stage by --stage=pnet or rnet or onet")
     dataPath = os.path.join(rootPath, "tmp/data/%s"%(args.stage))
@@ -197,6 +200,12 @@ if __name__ == "__main__":
     if not os.path.isdir(os.path.dirname(modelPrefix)):
         os.makedirs(os.path.dirname(modelPrefix))
     
+    #starttime = datetime.datetime.now()
+    starttime = datetime.now()
+    
     _net = {'pnet': P_Net, 'rnet': R_Net, 'onet': O_Net}
     train(_net[args.stage], modelPrefix, args.epoch, dataPath, display=args.display, baseLr=args.lr, gpus=args.gpus)
 
+    #endtime = datetime.datetime.now()
+    endtime = datetime.now()
+    print((endtime - starttime).seconds)

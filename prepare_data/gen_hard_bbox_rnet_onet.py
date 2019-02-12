@@ -5,6 +5,8 @@ import cv2
 import os
 import argparse
 import pickle
+import datetime
+
 rootPath = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "../"))
 sys.path.insert(0, rootPath)
 from tools.common_utils import IoU, convert_to_square
@@ -123,7 +125,7 @@ def __save_data(stage, data, save_path):
         sys.stdout.flush()
     for f in saveFiles.values():
         f.close()
-    print '\n'
+    print('\n')
 
 def test_net(batch_size, stage, thresh, min_face_size, stride):
     print(">>>>>> Detect bbox for %s..."%(stage))
@@ -181,20 +183,24 @@ if __name__ == '__main__':
     if gpus:
         os.environ["CUDA_VISIBLE_DEVICES"] = gpus
     if stage == "rnet":
-        batchSize = 1
+        #batchSize = 1
+        batchSize = 32
         threshold = [0.4, 0.05]
         minFace = 24
         stride = 2
     elif stage == "onet":
-        batchSize = 1
+        batchSize = 32
         threshold = [0.4, 0.05]
         minFace = 24
         stride = 2
     else:
         raise Exception("Invaild stage...Please use --stage")
+    starttime = datetime.datetime.now()
     test_net(
           batchSize, #test batch_size 
           stage, # can be 'rnet' or 'onet'
           threshold, #cls threshold
           minFace, #min_face
           stride)
+    endtime = datetime.datetime.now()
+    print((endtime - starttime).seconds)

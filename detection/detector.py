@@ -2,6 +2,7 @@ import tensorflow as tf
 import numpy as np
 
 class Detector(object):
+
     #net_factory:rnet or onet
     #datasize:24 or 48
     def __init__(self, net_factory, data_size, batch_size, model_path):
@@ -23,6 +24,8 @@ class Detector(object):
 
         self.data_size = data_size
         self.batch_size = batch_size
+
+
     #rnet and onet minibatch(test)
     def predict(self, databatch):
         # access data

@@ -4,6 +4,7 @@ rootPath = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__
 sys.path.insert(0, rootPath)
 import numpy as np
 import argparse
+import datetime
 
 from tools.tfrecord_utils import _process_image_withoutcoder, _convert_to_example_simple
 import tensorflow as tf
@@ -149,5 +150,8 @@ if __name__ == "__main__":
     # set GPU
     if args.gpus:
         os.environ["CUDA_VISIBLE_DEVICES"] = args.gpus
+    starttime = datetime.datetime.now()
     gen_tfrecords(stage, True)
+    endtime = datetime.datetime.now()
+    print((endtime - starttime).seconds)
 
