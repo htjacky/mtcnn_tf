@@ -57,7 +57,8 @@ def gen_landmark_data(srcTxt, net, augment=False):
             if max(gt_w, gt_h) < 40 or x1 < 0 or y1 < 0:
                 continue
             #random shift
-            for i in range(10):
+            #for i in range(10):
+            for i in range(20):
                 bbox_size = np.random.randint(int(min(gt_w, gt_h) * 0.8), np.ceil(1.25 * max(gt_w, gt_h)))
                 delta_x = np.random.randint(-gt_w * 0.2, gt_w * 0.2)
                 delta_y = np.random.randint(-gt_h * 0.2, gt_h * 0.2)

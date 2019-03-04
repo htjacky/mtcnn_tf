@@ -116,7 +116,9 @@ def P_Net(inputs, label=None, bbox_target=None, landmark_target=None, training=T
     #define common param
     with slim.arg_scope([slim.conv2d],
                         activation_fn=prelu,
-                        weights_initializer=slim.xavier_initializer(),
+                        #weights_initializer=slim.xavier_initializer(),
+                        weights_initializer=tf.contrib.layers.variance_scaling_initializer(factor=2.0, mode='FAN_IN', uniform=False),
+                        #weights_initializer=tf.initializers.he_normal(),
                         biases_initializer=tf.zeros_initializer(),
                         weights_regularizer=slim.l2_regularizer(0.0005), 
                         padding='valid'):
@@ -155,6 +157,7 @@ def R_Net(inputs,label=None, bbox_target=None, landmark_target=None, training=Tr
     with slim.arg_scope([slim.conv2d],
                         activation_fn = prelu,
                         weights_initializer=slim.xavier_initializer(),
+                        #weights_initializer=tf.initializers.he_normal(),
                         biases_initializer=tf.zeros_initializer(),
                         weights_regularizer=slim.l2_regularizer(0.0005),                        
                         padding='valid'):
@@ -186,6 +189,7 @@ def O_Net(inputs,label=None,bbox_target=None,landmark_target=None,training=True)
     with slim.arg_scope([slim.conv2d],
                         activation_fn = prelu,
                         weights_initializer=slim.xavier_initializer(),
+                        #weights_initializer=tf.initializers.he_normal(),
                         biases_initializer=tf.zeros_initializer(),
                         weights_regularizer=slim.l2_regularizer(0.0005),                        
                         padding='valid'):

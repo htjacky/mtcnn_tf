@@ -13,28 +13,31 @@ from detection.fcn_detector import FcnDetector
 import cv2
 import argparse
 
-def test(stage, testFolder):
+def test(stage, testFolder, epoch):
     print("Start testing in %s"%(testFolder))
     detectors = [None, None, None]
     if stage in ['pnet', 'rnet', 'onet']:
         modelPath = os.path.join(rootPath, 'tmp/model/pnet/')
         a = [b[5:-6] for b in os.listdir(modelPath) if b.startswith('pnet-') and b.endswith('.index')]
         maxEpoch = max(map(int, a)) # auto match a max epoch model
-        modelPath = os.path.join(modelPath, "pnet-%d"%(maxEpoch))
+        #modelPath = os.path.join(modelPath, "pnet-%d"%(maxEpoch))
+        modelPath = os.path.join(modelPath, "pnet-%d"%(epoch))
         print("Use PNet model: %s"%(modelPath))
         detectors[0] = FcnDetector(P_Net,modelPath) 
     if stage in ['rnet', 'onet']:
         modelPath = os.path.join(rootPath, 'tmp/model/rnet/')
         a = [b[5:-6] for b in os.listdir(modelPath) if b.startswith('rnet-') and b.endswith('.index')]
         maxEpoch = max(map(int, a))
-        modelPath = os.path.join(modelPath, "rnet-%d"%(maxEpoch))
+        #modelPath = os.path.join(modelPath, "rnet-%d"%(maxEpoch))
+        modelPath = os.path.join(modelPath, "rnet-%d"%(epoch))
         print("Use RNet model: %s"%(modelPath))
         detectors[1] = Detector(R_Net, 24, 1, modelPath)
     if stage in ['onet']:
         modelPath = os.path.join(rootPath, 'tmp/model/onet/')
         a = [b[5:-6] for b in os.listdir(modelPath) if b.startswith('onet-') and b.endswith('.index')]
         maxEpoch = max(map(int, a))
-        modelPath = os.path.join(modelPath, "onet-%d"%(maxEpoch))
+        #modelPath = os.path.join(modelPath, "onet-%d"%(maxEpoch))
+        modelPath = os.path.join(modelPath, "onet-%d"%(epoch))
         print("Use ONet model: %s"%(modelPath))
         detectors[2] = Detector(O_Net, 48, 1, modelPath)
     mtcnnDetector = MtcnnDetector(detectors=detectors, min_face_size = 24, threshold=[0.9, 0.6, 0.7])
@@ -69,6 +72,8 @@ def parse_args():
                                      formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument('--stage', dest='stage', help='working stage, can be pnet, rnet, onet',
                         default='onet', type=str)
+    parser.add_argument('--epoch', dest='epoch', help='specify epoch. eg: --epoch=10',
+                        default='10', type=int)
     parser.add_argument('--gpus', dest='gpus', help='specify gpu to run. eg: --gpus=0,1',
                         default='0', type=str)
     args = parser.parse_args()
@@ -81,5 +86,5 @@ if __name__ == "__main__":
         raise Exception("Please specify stage by --stage=pnet or rnet or onet")
     # Support stage: pnet, rnet, onet
     os.environ["CUDA_VISIBLE_DEVICES"] = args.gpus # set GPU
-    test(stage, os.path.join(rootPath, "testing", "images"))
+    test(stage, os.path.join(rootPath, "testing", "images"), args.epoch)
 

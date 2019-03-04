@@ -57,7 +57,7 @@ if __name__ == '__main__':
     data_path = 'dataset'
     data_dir = data_path + '/WIDER_val/images'
     anno_file = 'testing/wider_face_val.txt'
-    output_file = data_path + '/WIDER_NoLM_RNet_V'+ str(args.epoch) + 'XXX/'
+    output_file = data_path + '/WIDER_NoLM_WIN_V'+ str(args.epoch) + 'XXX/'
 
     if not os.path.exists(output_file):
         os.mkdir(output_file)
@@ -73,8 +73,8 @@ if __name__ == '__main__':
     vis = False
     detectors = [None, None, None]
     # prefix is the model path
-    prefix = ['tmp/model/pnet/pnet', 'tmp/model/rnet/rnet',
-              'tmp/model/onet/onet']
+    prefix = ['win/model/pnet/pnet', 'win/model/rnet/rnet',
+              'win/model/onet/onet']
     #epoch = [30, 30, 30]
     #epoch = [100, 100, 100]
     epoch = [args.epoch, args.epoch, args.epoch]
@@ -126,7 +126,7 @@ if __name__ == '__main__':
         f_name = item[1].split('.jpg')[0]
 
         dets_file_name = os.path.join(save_path, f_name + '.txt')
-        fid = open(dets_file_name,'w')
+        fid =open (dets_file_name,'w')
         boxes = all_boxes[0]
         if boxes is None:
             fid.write(item[1] + '\n')

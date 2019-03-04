@@ -42,7 +42,8 @@ def gen_hard_bbox_pnet(srcDataSet, srcAnnotations):
 
         # 1. NEG: random to crop negative sample image
         negNum = 0
-        while negNum < 50:
+        while negNum < 100:
+            #size = np.random.randint(40, min(width, height) / 2)
             size = np.random.randint(12, min(width, height) / 2)
             # top_left
             nx = np.random.randint(0, width - size)
@@ -72,27 +73,27 @@ def gen_hard_bbox_pnet(srcDataSet, srcAnnotations):
             if max(w, h) < 40 or x1 < 0 or y1 < 0:
                 continue
             # 2. NEG: random to crop sample image in bbox inside
-            for i in range(5):
-                size = np.random.randint(12, min(width, height) / 2)
-                # delta_x and delta_y are offsets of (x1, y1)
-                delta_x = np.random.randint(max(-size, -x1), w)
-                delta_y = np.random.randint(max(-size, -y1), h)
-                nx1 = int(max(0, x1 + delta_x))
-                ny1 = int(max(0, y1 + delta_y))
-                if nx1 + size > width or ny1 + size > height:
-                    continue
-                crop_box = np.array([nx1, ny1, nx1 + size, ny1 + size])
-                Iou = IoU(crop_box, boxes)
-                if np.max(iou) >= 0.3:
-                    continue
-                cropped_im = img[ny1: ny1 + size, nx1: nx1 + size, :]
-                resized_im = cv2.resize(cropped_im, (12, 12), interpolation=cv2.INTER_LINEAR)
-                save_file = os.path.join(saveFolder, "neg", "%s.jpg"%nIdx)
-                saveFiles['neg'].write(save_file + ' 0\n')
-                cv2.imwrite(save_file, resized_im)
-                nIdx += 1
+            #for i in range(5):
+                #size = np.random.randint(12, min(width, height) / 2)
+                ## delta_x and delta_y are offsets of (x1, y1)
+                #delta_x = np.random.randint(max(-size, -x1), w)
+                #delta_y = np.random.randint(max(-size, -y1), h)
+                #nx1 = int(max(0, x1 + delta_x))
+                #ny1 = int(max(0, y1 + delta_y))
+                #if nx1 + size > width or ny1 + size > height:
+                    #continue
+                #crop_box = np.array([nx1, ny1, nx1 + size, ny1 + size])
+                #Iou = IoU(crop_box, boxes)
+                #if np.max(iou) >= 0.3:
+                    #continue
+                #cropped_im = img[ny1: ny1 + size, nx1: nx1 + size, :]
+                #resized_im = cv2.resize(cropped_im, (12, 12), interpolation=cv2.INTER_LINEAR)
+                #save_file = os.path.join(saveFolder, "neg", "%s.jpg"%nIdx)
+                #saveFiles['neg'].write(save_file + ' 0\n')
+                #cv2.imwrite(save_file, resized_im)
+                #nIdx += 1
             # 3. POS and PART
-            for i in range(20):
+            for i in range(40):
                 # pos and part face size [minsize*0.8,maxsize*1.25]
                 size = np.random.randint(int(min(w, h) * 0.8), np.ceil(1.25 * max(w, h)))
                 # delta here is the offset of box center
@@ -124,7 +125,7 @@ def gen_hard_bbox_pnet(srcDataSet, srcAnnotations):
                     saveFiles['pos'].write(save_file + ' 1 %.2f %.2f %.2f %.2f\n'%(offset_x1, offset_y1, offset_x2, offset_y2))
                     cv2.imwrite(save_file, resized_im)
                     pIdx += 1
-                elif IoU(crop_box, box_) >= 0.4:
+                elif IoU(crop_box, box_) >= 0.4 and i%3 == 0:
                     save_file = os.path.join(saveFolder, "part", "%s.jpg"%dIdx)
                     saveFiles['part'].write(save_file + ' -1 %.2f %.2f %.2f %.2f\n'%(offset_x1, offset_y1, offset_x2, offset_y2))
                     cv2.imwrite(save_file, resized_im)

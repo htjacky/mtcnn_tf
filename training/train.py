@@ -31,7 +31,8 @@ def train_model(baseLr, loss, data_num):
     lr_values = [baseLr * (lr_factor ** x) for x in range(0, len(config.LR_EPOCH) + 1)]
     #control learning rate
     lr_op = tf.train.piecewise_constant(global_step, boundaries, lr_values)
-    optimizer = tf.train.MomentumOptimizer(lr_op, 0.9)
+    #optimizer = tf.train.MomentumOptimizer(lr_op, 0.9)
+    optimizer = tf.train.RMSPropOptimizer(lr_op, 0.9)
     train_op = optimizer.minimize(loss, global_step)
     return train_op, lr_op
 
@@ -75,7 +76,8 @@ def train(netFactory, modelPrefix, endEpoch, dataPath, display=200, baseLr=0.01,
         neg_dir = os.path.join(dataPath, 'neg.tfrecord')
         landmark_dir = os.path.join(dataPath, 'landmark.tfrecord')
         dataset_dirs = [pos_dir, part_dir, neg_dir, landmark_dir]
-        pos_ratio, part_ratio, landmark_ratio, neg_ratio = 1.0/6, 1.0/6, 1.0/6, 3.0/6
+        #pos_ratio, part_ratio, landmark_ratio, neg_ratio = 1.0/6, 1.0/6, 1.0/6, 3.0/6
+        pos_ratio, part_ratio, landmark_ratio, neg_ratio = 1.0/7, 1.0/7, 2.0/7, 3.0/7
         pos_batch_size = int(np.ceil(config.BATCH_SIZE*pos_ratio))
         part_batch_size = int(np.ceil(config.BATCH_SIZE*part_ratio))
         neg_batch_size = int(np.ceil(config.BATCH_SIZE*neg_ratio))
@@ -180,9 +182,10 @@ def parse_args():
     parser.add_argument('--stage', dest='stage', help='working stage, can be rnet, onet',
                         default='unknow', type=str)
     parser.add_argument('--gpus', dest='gpus', help='specify gpu to run. eg: --gpus=0,1',
-                        default='0', type=str)
+                        default='0,1', type=str)
     parser.add_argument('--epoch', dest='epoch', help='total epoch to training',
                         default=30, type=int)
+                        #default=100, type=int)
     parser.add_argument('--display', dest='display', help='how much step to display',
                         default=100, type=int)
     parser.add_argument('--lr', dest='lr', help='base learning rate',

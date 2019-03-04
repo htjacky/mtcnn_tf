@@ -1,0 +1,65 @@
+#!/bin/bash
+set -e
+### All of your tmp data will be saved in ./tmp folder
+
+echo "Hello! I will prepare training data and starting to training step by step."
+
+# 1. checking dataset if OK
+if [ ! -d "./dataset/WIDER_train/images" ]; then
+	echo "Error: The WIDER_train/images is not exist. Read dataset/README.md to get useful info."
+	exit
+fi
+if [ ! -d "./dataset/lfw_5590" ]; then
+	echo "Error: The lfw_5590 is not exist. Read dataset/README.md to get useful info."
+	exit
+fi
+echo "Checking dataset pass."
+if [ -d "./tmp" ]; then
+	echo "Warning: The tmp folder is not empty. A good idea is to run ./clearAll.sh to clear it before training."
+fi
+
+# 2. stage: P-Net
+### generate training data(Face Detection Part) for PNet
+echo "Preparing P-Net training data: bbox"
+python prepare_data/gen_hard_bbox_pnet.py
+echo "Preparing P-Net training data: landmark"
+python prepare_data/gen_landmark_aug.py --stage=pnet
+echo "Preparing P-Net tfrecord file"
+python prepare_data/gen_tfrecords.py --stage=pnet
+echo "Start to training P-Net"
+python training/train.py --stage=pnet --gpus=0,1 --epoch=30
+
+echo "Preparing R-Net training data: bbox"
+python prepare_data/gen_hard_bbox_rnet_onet.py --stage=rnet
+echo "Preparing R-Net training data: landmark"
+python prepare_data/gen_landmark_aug.py --stage=rnet
+echo "Preparing R-Net tfrecord file"
+python prepare_data/gen_tfrecords.py --stage=rnet
+echo "Start to training R-Net"
+python training/train.py --stage=rnet --gpus=0,1 --epoch=30
+
+echo "Preparing O-Net training data: bbox"
+python prepare_data/gen_hard_bbox_rnet_onet.py --stage=onet
+echo "Preparing O-Net training data: landmark"
+python prepare_data/gen_landmark_aug.py --stage=onet
+echo "Preparing O-Net tfrecord file"
+python prepare_data/gen_tfrecords.py --stage=onet
+echo "Start to training O-Net"
+python training/train.py --stage=onet --gpus=0,1 --epoch=30
+
+echo "Generate wider face result"
+python testing/generate_wider_result.py --epoch=2
+python testing/generate_wider_result.py --epoch=4
+python testing/generate_wider_result.py --epoch=6
+python testing/generate_wider_result.py --epoch=8
+python testing/generate_wider_result.py --epoch=10
+python testing/generate_wider_result.py --epoch=14
+python testing/generate_wider_result.py --epoch=20
+python testing/generate_wider_result.py --epoch=26
+python testing/generate_wider_result.py --epoch=30
+#python testing/generate_wider_result.py --epoch=60
+
+# 5. Done
+echo "Congratulation! All stages had been done. Now you can going to testing and hope you enjoy your result."
+echo "haha...bye bye"
+
