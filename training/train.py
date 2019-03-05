@@ -30,7 +30,9 @@ def train_model(baseLr, loss, data_num):
     #lr_values[0.01,0.001,0.0001,0.00001]
     lr_values = [baseLr * (lr_factor ** x) for x in range(0, len(config.LR_EPOCH) + 1)]
     #control learning rate
-    lr_op = tf.train.piecewise_constant(global_step, boundaries, lr_values)
+    #lr_op = tf.train.piecewise_constant(global_step, boundaries, lr_values)
+    lr_op = tf.train.exponential_decay(baseLr, global_step, 1000, 0.96, staircase=True)
+    #lr_op = tf.train.exponential_decay(baseLr, global_step, global_step/160, 0.96, staircase=True)
     #optimizer = tf.train.MomentumOptimizer(lr_op, 0.9)
     optimizer = tf.train.RMSPropOptimizer(lr_op, 0.9)
     train_op = optimizer.minimize(loss, global_step)

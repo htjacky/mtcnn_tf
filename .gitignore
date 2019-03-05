@@ -1,4 +1,5 @@
 *.pyc
+*.o
 dataset/WIDER_train
 dataset/lfw_5590
 dataset/net_7876

@@ -11,5 +11,6 @@ config.CLS_OHEM_RATIO = 0.7
 config.BBOX_OHEM = False
 config.BBOX_OHEM_RATIO = 0.7
 
-config.EPS = 1e-14
-config.LR_EPOCH = [6, 14, 20]
+#config.EPS = 1e-14
+#config.LR_EPOCH = [6, 14, 25, 40]
+config.LR_EPOCH = [4, 10, 20, 35]
